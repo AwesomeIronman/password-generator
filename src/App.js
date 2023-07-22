@@ -1,23 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useState } from "react";
+import "./App.css";
+import { BIG_LETTERS, SMALL_LETTERS } from "./utils/constants";
+import { PasswordList } from "./components/PasswordList";
+import { PasswordForm } from "./components/PasswordForm";
 
 function App() {
+  const [charCount, setCharCount] = useState(6);
+  const [passwords, setPasswords] = useState([]);
+
+  const submitHandler = useCallback(
+    (e) => {
+      e.preventDefault();
+      const LETTERS = [...SMALL_LETTERS, ...BIG_LETTERS];
+      const password = Array.from({ length: charCount })
+        .map(() => {
+          const randomNumber = Math.floor(
+            Math.random() * (LETTERS.length - 0) + 0
+          );
+          return LETTERS[randomNumber];
+        })
+        .join("");
+      setPasswords((prev) => [...prev, password]);
+    },
+    [charCount]
+  );
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <p>Password Generator</p>
       </header>
+      <section>
+        <PasswordForm
+          charCount={charCount}
+          setCharCount={setCharCount}
+          submitHandler={submitHandler}
+        />
+
+        <PasswordList passwords={passwords} />
+      </section>
     </div>
   );
 }
